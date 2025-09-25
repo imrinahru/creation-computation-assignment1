@@ -12,9 +12,13 @@
     https://www.digikey.ca/en/maker/tutorials/2022/how-to-avoid-using-the-delay-function-in-arduino-sketches
 */
 
-int sensorValue = 0;
-long sensorMax = 1023;
-long sensorMin = 0;
+// int sensorValue = 0;
+// long sensorMax = 1023;
+// long sensorMin = 0;
+// Initialize extremes correctly
+long sensorMin = 1023;
+long sensorMax = 0;
+
 
 int sensorPin = A6;
 int carryOnPin = 11;   // Green LED
@@ -42,12 +46,19 @@ void setup() {
 void loop() {
   sensorValue = analogRead(sensorPin);
 
-  // Update min and max
-  if (sensorValue < sensorMax) sensorMax = sensorValue;
-  if (sensorValue > sensorMin) sensorMin = sensorValue;
+  // // Update min and max
+  // if (sensorValue < sensorMax) sensorMax = sensorValue;
+  // if (sensorValue > sensorMin) sensorMin = sensorValue;
+  // Update correctly
+if (sensorValue > sensorMax) sensorMax = sensorValue; // raise ceiling
+if (sensorValue < sensorMin) sensorMin = sensorValue; // lower floor
 
-  // Map min and max to 0~100 scale
-  mappedValue = map(sensorValue, sensorMin, sensorMax, 0.0, 100.0);
+  // // Map min and max to 0~100 scale
+  // mappedValue = map(sensorValue, sensorMin, sensorMax, 0.0, 100.0);
+  // Smooth 0–100 mapping (not Arduino map)
+float range = max(1L, (sensorMax - sensorMin));
+float mappedValue = 100.0f * (sensorValue - sensorMin) / (float)range;
+mappedValue = constrain(mappedValue, 0.0f, 100.0f);
 
   // Print in serial monitor
   Serial.print("Sensor Value: ");
@@ -104,3 +115,4 @@ void loop() {
     }
   }
 }
+
