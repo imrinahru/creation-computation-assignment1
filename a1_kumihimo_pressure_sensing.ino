@@ -12,7 +12,7 @@
     https://www.digikey.ca/en/maker/tutorials/2022/how-to-avoid-using-the-delay-function-in-arduino-sketches
 */
 
-// int sensorValue = 0;
+int sensorValue = 0;
 // long sensorMax = 1023;
 // long sensorMin = 0;
 // Initialize extremes correctly
@@ -25,7 +25,7 @@ int carryOnPin = 11;   // Green LED
 int beGentlePin = 12;  // White LED
 
 float mappedValue = 0.0;
-int threshold = 14;
+int threshold = 70;
 
 // Separate fade states for each LED
 int carryOnBrightness = 0;
@@ -55,7 +55,7 @@ if (sensorValue < sensorMin) sensorMin = sensorValue; // lower floor
 
   // // Map min and max to 0~100 scale
   // mappedValue = map(sensorValue, sensorMin, sensorMax, 0.0, 100.0);
-  // Smooth 0–100 mapping (not Arduino map)
+  // Smooth 0–100 mapping (not Arduino map, as map only deals with int)
 float range = max(1L, (sensorMax - sensorMin));
 float mappedValue = 100.0f * (sensorValue - sensorMin) / (float)range;
 mappedValue = constrain(mappedValue, 0.0f, 100.0f);
@@ -74,7 +74,7 @@ mappedValue = constrain(mappedValue, 0.0f, 100.0f);
   if (currentMillis - lastUpdate >= fadeInterval) {
     lastUpdate = currentMillis;
 
-    if (mappedValue < threshold) {
+    if (mappedValue > threshold) {
       // Fade beGentle (white), turn off carryOn (green)
       carryOnBrightness = 0;
       analogWrite(carryOnPin, carryOnBrightness);
@@ -115,4 +115,3 @@ mappedValue = constrain(mappedValue, 0.0f, 100.0f);
     }
   }
 }
-
